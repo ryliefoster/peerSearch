@@ -1,3 +1,4 @@
+resultBuffer = "result00000000result00000000result"
 
 class Entry:
     def __init__(self, name, link, desc, tags):
@@ -43,11 +44,9 @@ class SearchTable:
             text = f"{entry.get_name()} {entry.get_desc()}"
             if query in text:
                 result.append(entry)
+                result.append(resultBuffer)
             elif query in entry.get_tags():
                 result.append(entry)
-        if len(result) == 0:
-            ent = Entry("No matches found.", "", "", "")
-            result.append(ent)
         return result
 
 
