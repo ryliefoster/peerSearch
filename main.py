@@ -23,7 +23,7 @@ if __name__ == "__main__":
                     results = md.myTable.search(data.decode("utf-8"))
                     result = ""
                     for e in results:
-                        result += e.get_name() + "\n" + e.get_link() + "\n" + e.get_desc() + "\n"
+                        result += e.get_name() + "\n" + e.get_link() + "\n" + e.get_desc() + "\n" + resultBuffer
                     conn.sendall(result.encode("utf-8"))
                     conn, addr = s.accept()
 
@@ -33,8 +33,7 @@ if __name__ == "__main__":
             results = md.myTable.search(query)
             result = ""
             for e in results:
-                if not e == resultBuffer:
-                    result += "From your data:\n" + e.get_name() + "\n" + e.get_link() + "\n" + e.get_desc() + "\n"
+                result += "From your data:\n" + e.get_name() + "\n" + e.get_link() + "\n" + e.get_desc() + "\n"
             for friend in mf.friends:
                 try:
                     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
