@@ -33,28 +33,29 @@ if __name__ == "__main__":
             results = md.myTable.search(query)
             result = ""
             for e in results:
-                result += "From your data:\n" + e.get_name() + "\n" + e.get_link() + "\n" + e.get_desc() + "\n"
+                result += "\nFrom your data:\n" + e.get_name() + "\n" + e.get_link() + "\n" + e.get_desc() + "\n"
             for friend in mf.friends:
                 try:
                     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         s.connect((friend[1], friend[2]))
                         s.sendall(query.encode("utf-8"))
                         data = s.recv(4096).decode("utf-8")
-                        print(data)
                     entStart = 0
                     while True:
-                        entEnd = data[entStart:].find(resultBuffer)
+                        entEnd = entStart + data[entStart:].find(resultBuffer)
                         ent = data[entStart:entEnd]
-                        linkStart = ent.find("www.")
+                        linkStart = ent.find("https://")
                         if linkStart == -1:
-                            break
+                            linkStart = ent.find("http://")
+                            if linkStart == -1:
+                                break
                         linkEnd = linkStart + ent[linkStart:].find("\n")
-                        link = data[linkStart:linkEnd]
+                        link = ent[linkStart:linkEnd]
                         if not link in result:
-                            result += f"From {friend[0]}:\n {data[:entEnd]}"
+                            result += f"\nFrom {friend[0]}:\n{ent}"
                         entStart = entEnd + bufflen
-                except:
-                    print(f"{friend[0]} not connected.")
+                except Exception as e:
+                    pass
             if len(result) == 0:
                 print("No matches found.")
             else:
