@@ -3,6 +3,8 @@ import myFriends as mf
 import searchTable as st
 import socket
 
+resultBuffer = "result00000000result00000000result"
+bufflen = len(resultBuffer)
 
 if __name__ == "__main__":
     choice = ""
@@ -28,8 +30,34 @@ if __name__ == "__main__":
     elif choice == "q":
         while True:
             query = input("Query:\n")
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.connect(("127.0.0.1", 20000))
-                s.sendall(query.encode("utf-8"))
-                data = s.recv(4096).decode("utf-8")
-            print(data)
+            results = md.myTable.search(query)
+            result = ""
+            for e in results:
+                if not e == resultBuffer:
+                    result += "From your data:\n" + e.get_name() + "\n" + e.get_link() + "\n" + e.get_desc() + "\n"
+            for friend in mf.friends:
+                try:
+                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                        s.connect((friend[1], friend[2]))
+                        s.sendall(query.encode("utf-8"))
+                        data = s.recv(4096).decode("utf-8")
+                        print(data)
+                    entStart = 0
+                    while True:
+                        entEnd = data[entStart:].find(resultBuffer)
+                        ent = data[entStart:entEnd]
+                        linkStart = ent.find("www.")
+                        if linkStart == -1:
+                            break
+                        linkEnd = linkStart + ent[linkStart:].find("\n")
+                        link = data[linkStart:linkEnd]
+                        if not link in result:
+                            result += f"From {friend[0]}:\n {data[:entEnd]}"
+                        entStart = entEnd + bufflen
+                except:
+                    print(f"{friend[0]} not connected.")
+            if len(result) == 0:
+                print("No matches found.")
+            else:
+                print(result)
+
