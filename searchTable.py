@@ -1,5 +1,3 @@
-resultBuffer = "result00000000result00000000result"
-
 class Entry:
     def __init__(self, name, link, desc, tags):
         self.name = name
@@ -44,7 +42,6 @@ class SearchTable:
             text = f"{entry.get_name()} {entry.get_desc()}"
             if query in text:
                 result.append(entry)
-                result.append(resultBuffer)
             elif query in entry.get_tags():
                 result.append(entry)
         return result
